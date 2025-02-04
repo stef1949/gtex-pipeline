@@ -22,7 +22,7 @@ docker run -it --rm `
     --threads 6 \
     --output_dir /results/star_out"
 
-#  Generate STAR Index
+# Generate STAR Alignment
 docker run -it --rm `
  -v D:/gtex-rnaseq/inputs:/data `
  -v D:/gtex-rnaseq/outputs:/results `
@@ -36,10 +36,14 @@ docker run -it --rm `
    --outFileNamePrefix /results/star_out/K-562-SM-7IGNY-2pct. \
    --outSAMtype BAM Unsorted"
 
-#Download to bin
+
+
+## SRA-Toolkit scripts
+
+# Download to bin
 ./prefetch SRR8618307
 
-#Convert to .fastq
+# Convert to .fastq
 fastq-dump --split-files --gzip SRR8618307
 
 ## Advanved scripts
