@@ -1,0 +1,46 @@
+
+# Confirm STAR index is accessible
+docker run -it -v D:/gtex-rnaseq/inputs:/data broadinstitute/gtex_rnaseq:V10 `
+  ls -l /data/reference/star_index_oh75
+
+# Test FATSQ files present & accessible
+Test-Path D:\gtex-rnaseq\inputs\fastq\test_data_K-562-SM-7IGNY-2pct_1.fastq.gz
+Test-Path D:\gtex-rnaseq\inputs\fastq\test_data_K-562-SM-7IGNY-2pct_2.fastq.gz
+
+# Generate STAR Index
+docker run -it --rm `
+  --user root:root ` 
+  -v D:/gtex-rnaseq/inputs:/data `
+  -v D:/gtex-rnaseq/outputs:/results `
+  --workdir /data `
+  broadinstitute/gtex_rnaseq:V10 `
+  /bin/bash -c "/src/run_STAR.py \
+    /data/reference/star_index_oh75 \
+    /data/fastq/test_data_K-562-SM-7IGNY-2pct_1.fastq.gz \
+    /data/fastq/test_data_K-562-SM-7IGNY-2pct_2.fastq.gz \
+    test_data_K-562-SM-7IGNY-2pct \
+    --threads 6 \
+    --output_dir /results/star_out"
+
+#  Generate STAR Index
+docker run -it --rm `
+ -v D:/gtex-rnaseq/inputs:/data `
+ -v D:/gtex-rnaseq/outputs:/results `
+ broadinstitute/gtex_rnaseq:V10 `
+ /bin/bash -c "STAR \
+   --runMode alignReads \
+   --runThreadN 6 \
+   --genomeDir /data/reference/star_index_oh75 \
+   --readFilesIn /data/fastq/K-562-SM-7IGNY-2pct_1.fastq.gz /data/fastq/K-562-SM-7IGNY-2pct_2.fastq.gz \
+   --readFilesCommand zcat \
+   --outFileNamePrefix /results/star_out/K-562-SM-7IGNY-2pct. \
+   --outSAMtype BAM Unsorted"
+
+
+## Advanved scripts
+# Sample ID (derived from your FASTQ filename)
+$sample_id = "test_data_K-562-SM-7IGNY-2pct"
+
+# Path to inputs and outputs
+$input_dir = "D:/gtex-rnaseq/inputs"
+$output_dir = "D:/gtex-rnaseq/outputs"
