@@ -36,6 +36,11 @@ docker run -it --rm `
    --outFileNamePrefix /results/star_out/K-562-SM-7IGNY-2pct. \
    --outSAMtype BAM Unsorted"
 
+#Download to bin
+./prefetch SRR8618307
+
+#Convert to .fastq
+fastq-dump --split-files --gzip SRR8618307
 
 ## Advanved scripts
 # Sample ID (derived from your FASTQ filename)
