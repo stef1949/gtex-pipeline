@@ -1,3 +1,4 @@
+### PowerShell scripts for GTEx RNA-Seq analysis
 
 # Confirm STAR index is accessible
 docker run -it -v D:/gtex-rnaseq/inputs:/data broadinstitute/gtex_rnaseq:V10 `
@@ -6,6 +7,12 @@ docker run -it -v D:/gtex-rnaseq/inputs:/data broadinstitute/gtex_rnaseq:V10 `
 # Test FATSQ files present & accessible
 Test-Path D:\gtex-rnaseq\inputs\fastq\test_data_K-562-SM-7IGNY-2pct_1.fastq.gz
 Test-Path D:\gtex-rnaseq\inputs\fastq\test_data_K-562-SM-7IGNY-2pct_2.fastq.gz
+
+# Conversion of BAM to FASTQ
+docker run -it --rm `
+-v D:gtex-rnaseq/inputs:/data
+-t broadinstitute/gtex_rnaseq \
+    /bin/bash -c "/src/run_SamToFastq.py /data/$input_bam -p ${sample_id} -o /data"
 
 # Generate STAR Index
 docker run -it --rm `
@@ -36,7 +43,6 @@ docker run -it --rm `
    --outFileNamePrefix /results/star_out/K-562-SM-7IGNY-2pct. \
    --outSAMtype BAM Unsorted"
 
-
 # Generate BAM Alignment
 docker run -it --rm `
 -v D:/gtex-rnaseq/inputs:/data `
@@ -50,6 +56,16 @@ broadinstitute/gtex_rnaseq:V10 `
         --threads 6 \
 	      --outSAMtype BAM Unsorted \
         --output_dir /tmp/star_out && mv /tmp/star_out /results/star_out"
+
+# mark duplicates (Picard)
+docker run -it --rm 
+-v D:/gtex-rnaseq/inputs:/data `
+-v D:/gtex-rnaseq/outputs:/results ` 
+broadinstitute/gtex_rnaseq:V10 \
+/bin/bash -c "/src/run_MarkDuplicates.py \
+        /data/star_out/${sample_id}.Aligned.sortedByCoord.out.patched.bam \
+        ${sample_id}.Aligned.sortedByCoord.out.patched.md \
+        --output_dir /data"
 
 
 ## SRA-Toolkit scripts
